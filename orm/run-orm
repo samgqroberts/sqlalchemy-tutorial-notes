@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python orm.py | tee orm-output.txt

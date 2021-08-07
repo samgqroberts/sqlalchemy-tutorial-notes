@@ -1,0 +1,148 @@
+
+ -- Connecting -- 
+
+
+ -- Declare a Mapping -- 
+
+
+ -- Create a Schema -- 
+
+users
+2021-08-07 15:28:13,347 INFO sqlalchemy.engine.base.Engine SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+2021-08-07 15:28:13,347 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 15:28:13,347 INFO sqlalchemy.engine.base.Engine SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+2021-08-07 15:28:13,347 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 15:28:13,348 INFO sqlalchemy.engine.base.Engine PRAGMA main.table_info("users")
+2021-08-07 15:28:13,348 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 15:28:13,349 INFO sqlalchemy.engine.base.Engine PRAGMA temp.table_info("users")
+2021-08-07 15:28:13,349 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 15:28:13,350 INFO sqlalchemy.engine.base.Engine 
+CREATE TABLE users (
+	id INTEGER NOT NULL, 
+	name VARCHAR, 
+	fullname VARCHAR, 
+	nickname VARCHAR, 
+	PRIMARY KEY (id)
+)
+
+
+2021-08-07 15:28:13,350 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 15:28:13,351 INFO sqlalchemy.engine.base.Engine COMMIT
+
+ -- Create an Instance of the Mapped Class -- 
+
+ed
+edsnickname
+None
+
+ -- Creating a Session -- 
+
+
+ -- Adding and Updating Objects -- 
+
+2021-08-07 15:28:13,353 INFO sqlalchemy.engine.base.Engine BEGIN (implicit)
+2021-08-07 15:28:13,354 INFO sqlalchemy.engine.base.Engine INSERT INTO users (name, fullname, nickname) VALUES (?, ?, ?)
+2021-08-07 15:28:13,354 INFO sqlalchemy.engine.base.Engine ('ed', 'Ed Jones', 'edsnickname')
+2021-08-07 15:28:13,356 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users 
+WHERE users.name = ?
+ LIMIT ? OFFSET ?
+2021-08-07 15:28:13,356 INFO sqlalchemy.engine.base.Engine ('ed', 1, 0)
+<User(name='ed', fullname='Ed Jones', nickname='edsnickname')>
+True
+IdentitySet([<User(name='ed', fullname='Ed Jones', nickname='eddie')>])
+IdentitySet([<User(name='wendy', fullname='Wendy Williams', nickname='windy')>, <User(name='mary', fullname='Mary Contrary', nickname='mary')>, <User(name='fred', fullname='Fred Flintstone', nickname='freddy')>])
+2021-08-07 15:28:13,358 INFO sqlalchemy.engine.base.Engine UPDATE users SET nickname=? WHERE users.id = ?
+2021-08-07 15:28:13,358 INFO sqlalchemy.engine.base.Engine ('eddie', 1)
+2021-08-07 15:28:13,358 INFO sqlalchemy.engine.base.Engine INSERT INTO users (name, fullname, nickname) VALUES (?, ?, ?)
+2021-08-07 15:28:13,358 INFO sqlalchemy.engine.base.Engine ('wendy', 'Wendy Williams', 'windy')
+2021-08-07 15:28:13,359 INFO sqlalchemy.engine.base.Engine INSERT INTO users (name, fullname, nickname) VALUES (?, ?, ?)
+2021-08-07 15:28:13,359 INFO sqlalchemy.engine.base.Engine ('mary', 'Mary Contrary', 'mary')
+2021-08-07 15:28:13,359 INFO sqlalchemy.engine.base.Engine INSERT INTO users (name, fullname, nickname) VALUES (?, ?, ?)
+2021-08-07 15:28:13,359 INFO sqlalchemy.engine.base.Engine ('fred', 'Fred Flintstone', 'freddy')
+2021-08-07 15:28:13,360 INFO sqlalchemy.engine.base.Engine COMMIT
+2021-08-07 15:28:13,360 INFO sqlalchemy.engine.base.Engine BEGIN (implicit)
+2021-08-07 15:28:13,361 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users 
+WHERE users.id = ?
+2021-08-07 15:28:13,361 INFO sqlalchemy.engine.base.Engine (1,)
+1
+
+ -- Rolling Back -- 
+
+2021-08-07 15:28:13,363 INFO sqlalchemy.engine.base.Engine UPDATE users SET name=? WHERE users.id = ?
+2021-08-07 15:28:13,363 INFO sqlalchemy.engine.base.Engine ('Edwardo', 1)
+2021-08-07 15:28:13,365 INFO sqlalchemy.engine.base.Engine INSERT INTO users (name, fullname, nickname) VALUES (?, ?, ?)
+2021-08-07 15:28:13,365 INFO sqlalchemy.engine.base.Engine ('fakeuser', 'Invalid', '12345')
+2021-08-07 15:28:13,366 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users 
+WHERE users.name IN (?, ?)
+2021-08-07 15:28:13,366 INFO sqlalchemy.engine.base.Engine ('Edwardo', 'fakeuser')
+[<User(name='Edwardo', fullname='Ed Jones', nickname='eddie')>, <User(name='fakeuser', fullname='Invalid', nickname='12345')>]
+2021-08-07 15:28:13,367 INFO sqlalchemy.engine.base.Engine ROLLBACK
+2021-08-07 15:28:13,368 INFO sqlalchemy.engine.base.Engine BEGIN (implicit)
+2021-08-07 15:28:13,368 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users 
+WHERE users.id = ?
+2021-08-07 15:28:13,368 INFO sqlalchemy.engine.base.Engine (1,)
+ed
+False
+
+ -- Querying -- 
+
+2021-08-07 15:28:13,369 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users ORDER BY users.id
+2021-08-07 15:28:13,369 INFO sqlalchemy.engine.base.Engine ()
+ed Ed Jones
+wendy Wendy Williams
+mary Mary Contrary
+fred Fred Flintstone
+2021-08-07 15:28:13,370 INFO sqlalchemy.engine.base.Engine SELECT users.name AS users_name, users.fullname AS users_fullname 
+FROM users
+2021-08-07 15:28:13,370 INFO sqlalchemy.engine.base.Engine ()
+ed Ed Jones
+wendy Wendy Williams
+mary Mary Contrary
+fred Fred Flintstone
+2021-08-07 15:28:13,371 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users
+2021-08-07 15:28:13,371 INFO sqlalchemy.engine.base.Engine ()
+<User(name='ed', fullname='Ed Jones', nickname='eddie')> ed
+<User(name='wendy', fullname='Wendy Williams', nickname='windy')> wendy
+<User(name='mary', fullname='Mary Contrary', nickname='mary')> mary
+<User(name='fred', fullname='Fred Flintstone', nickname='freddy')> fred
+2021-08-07 15:28:13,372 INFO sqlalchemy.engine.base.Engine SELECT users.name AS name_label 
+FROM users
+2021-08-07 15:28:13,373 INFO sqlalchemy.engine.base.Engine ()
+ed
+wendy
+mary
+fred
+2021-08-07 15:28:13,374 INFO sqlalchemy.engine.base.Engine SELECT user_alias.id AS user_alias_id, user_alias.name AS user_alias_name, user_alias.fullname AS user_alias_fullname, user_alias.nickname AS user_alias_nickname 
+FROM users AS user_alias
+2021-08-07 15:28:13,374 INFO sqlalchemy.engine.base.Engine ()
+<User(name='ed', fullname='Ed Jones', nickname='eddie')>
+<User(name='wendy', fullname='Wendy Williams', nickname='windy')>
+<User(name='mary', fullname='Mary Contrary', nickname='mary')>
+<User(name='fred', fullname='Fred Flintstone', nickname='freddy')>
+2021-08-07 15:28:13,376 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users ORDER BY users.id
+ LIMIT ? OFFSET ?
+2021-08-07 15:28:13,376 INFO sqlalchemy.engine.base.Engine (2, 1)
+<User(name='wendy', fullname='Wendy Williams', nickname='windy')>
+<User(name='mary', fullname='Mary Contrary', nickname='mary')>
+2021-08-07 15:28:13,377 INFO sqlalchemy.engine.base.Engine SELECT users.name AS users_name 
+FROM users 
+WHERE users.fullname = ?
+2021-08-07 15:28:13,377 INFO sqlalchemy.engine.base.Engine ('Ed Jones',)
+ed
+2021-08-07 15:28:13,379 INFO sqlalchemy.engine.base.Engine SELECT users.name AS users_name 
+FROM users 
+WHERE users.fullname = ?
+2021-08-07 15:28:13,379 INFO sqlalchemy.engine.base.Engine ('Ed Jones',)
+ed
+2021-08-07 15:28:13,380 INFO sqlalchemy.engine.base.Engine SELECT users.id AS users_id, users.name AS users_name, users.fullname AS users_fullname, users.nickname AS users_nickname 
+FROM users 
+WHERE users.name = ? AND users.fullname = ?
+2021-08-07 15:28:13,380 INFO sqlalchemy.engine.base.Engine ('ed', 'Ed Jones')
+<User(name='ed', fullname='Ed Jones', nickname='eddie')>
