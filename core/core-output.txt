@@ -1,0 +1,451 @@
+
+ -- Connecting -- 
+
+
+ -- Defined and Create Tables -- 
+
+2021-08-07 14:47:53,523 INFO sqlalchemy.engine.base.Engine SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+2021-08-07 14:47:53,524 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,524 INFO sqlalchemy.engine.base.Engine SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+2021-08-07 14:47:53,524 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,525 INFO sqlalchemy.engine.base.Engine PRAGMA main.table_info("users")
+2021-08-07 14:47:53,525 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,526 INFO sqlalchemy.engine.base.Engine PRAGMA temp.table_info("users")
+2021-08-07 14:47:53,526 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,526 INFO sqlalchemy.engine.base.Engine PRAGMA main.table_info("addresses")
+2021-08-07 14:47:53,526 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,526 INFO sqlalchemy.engine.base.Engine PRAGMA temp.table_info("addresses")
+2021-08-07 14:47:53,526 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,527 INFO sqlalchemy.engine.base.Engine 
+CREATE TABLE users (
+	id INTEGER NOT NULL, 
+	name VARCHAR, 
+	fullname VARCHAR, 
+	PRIMARY KEY (id)
+)
+
+
+2021-08-07 14:47:53,527 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,528 INFO sqlalchemy.engine.base.Engine COMMIT
+2021-08-07 14:47:53,528 INFO sqlalchemy.engine.base.Engine 
+CREATE TABLE addresses (
+	id INTEGER NOT NULL, 
+	user_id INTEGER, 
+	email_address VARCHAR NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id)
+)
+
+
+2021-08-07 14:47:53,528 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,529 INFO sqlalchemy.engine.base.Engine COMMIT
+
+ -- Insert Expressions -- 
+
+INSERT INTO users (id, name, fullname) VALUES (:id, :name, :fullname)
+INSERT INTO users (name, fullname) VALUES (:name, :fullname)
+{'name': 'jack', 'fullname': 'Jack Jones'}
+
+ -- Executing -- 
+
+<sqlalchemy.engine.base.Connection object at 0x7fd889459d90>
+2021-08-07 14:47:53,530 INFO sqlalchemy.engine.base.Engine INSERT INTO users (name, fullname) VALUES (?, ?)
+2021-08-07 14:47:53,530 INFO sqlalchemy.engine.base.Engine ('jack', 'Jack Jones')
+2021-08-07 14:47:53,530 INFO sqlalchemy.engine.base.Engine COMMIT
+INSERT INTO users (name, fullname) VALUES (?, ?)
+[1]
+
+ -- Executing Multiple Statements -- 
+
+2021-08-07 14:47:53,531 INFO sqlalchemy.engine.base.Engine INSERT INTO users (id, name, fullname) VALUES (?, ?, ?)
+2021-08-07 14:47:53,531 INFO sqlalchemy.engine.base.Engine (2, 'wendy', 'Wendy Williams')
+2021-08-07 14:47:53,531 INFO sqlalchemy.engine.base.Engine COMMIT
+2021-08-07 14:47:53,532 INFO sqlalchemy.engine.base.Engine INSERT INTO addresses (user_id, email_address) VALUES (?, ?)
+2021-08-07 14:47:53,532 INFO sqlalchemy.engine.base.Engine ((1, 'jack@yahoo.com'), (1, 'jack@msn.com'), (2, 'www@www.com'), (2, 'wendy@aol.com'))
+2021-08-07 14:47:53,532 INFO sqlalchemy.engine.base.Engine COMMIT
+
+ -- Selecting -- 
+
+2021-08-07 14:47:53,532 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname 
+FROM users
+2021-08-07 14:47:53,532 INFO sqlalchemy.engine.base.Engine ()
+(1, 'jack', 'Jack Jones')
+(2, 'wendy', 'Wendy Williams')
+2021-08-07 14:47:53,533 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname 
+FROM users
+2021-08-07 14:47:53,533 INFO sqlalchemy.engine.base.Engine ()
+name: jack ; fullname: Jack Jones
+name: wendy ; fullname: Wendy Williams
+2021-08-07 14:47:53,533 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname 
+FROM users
+2021-08-07 14:47:53,533 INFO sqlalchemy.engine.base.Engine ()
+name: jack ; fullname: Jack Jones
+name: wendy ; fullname: Wendy Williams
+
+ -- Selecting Specific Columns -- 
+
+2021-08-07 14:47:53,534 INFO sqlalchemy.engine.base.Engine SELECT users.name, users.fullname 
+FROM users
+2021-08-07 14:47:53,534 INFO sqlalchemy.engine.base.Engine ()
+('jack', 'Jack Jones')
+('wendy', 'Wendy Williams')
+2021-08-07 14:47:53,535 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname, addresses.id, addresses.user_id, addresses.email_address 
+FROM users, addresses
+2021-08-07 14:47:53,535 INFO sqlalchemy.engine.base.Engine ()
+(1, 'jack', 'Jack Jones', 1, 1, 'jack@yahoo.com')
+(1, 'jack', 'Jack Jones', 2, 1, 'jack@msn.com')
+(1, 'jack', 'Jack Jones', 3, 2, 'www@www.com')
+(1, 'jack', 'Jack Jones', 4, 2, 'wendy@aol.com')
+(2, 'wendy', 'Wendy Williams', 1, 1, 'jack@yahoo.com')
+(2, 'wendy', 'Wendy Williams', 2, 1, 'jack@msn.com')
+(2, 'wendy', 'Wendy Williams', 3, 2, 'www@www.com')
+(2, 'wendy', 'Wendy Williams', 4, 2, 'wendy@aol.com')
+2021-08-07 14:47:53,536 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname, addresses.id, addresses.user_id, addresses.email_address 
+FROM users, addresses 
+WHERE users.id = addresses.user_id
+2021-08-07 14:47:53,536 INFO sqlalchemy.engine.base.Engine ()
+(1, 'jack', 'Jack Jones', 1, 1, 'jack@yahoo.com')
+(1, 'jack', 'Jack Jones', 2, 1, 'jack@msn.com')
+(2, 'wendy', 'Wendy Williams', 3, 2, 'www@www.com')
+(2, 'wendy', 'Wendy Williams', 4, 2, 'wendy@aol.com')
+users.id = addresses.user_id
+
+ -- Operators -- 
+
+users.id = addresses.user_id
+users.id = :id_1
+{'id_1': 7}
+users.id != :id_1
+users.name IS NULL
+users.name < :name_1
+users.id + addresses.id
+users.name || users.fullname
+users.name tiddlywinks :name_1
+
+ -- Conjunctions -- 
+
+users.name LIKE :name_1 AND users.id = addresses.user_id AND (addresses.email_address = :email_address_1 OR addresses.email_address = :email_address_2) AND users.id <= :id_1
+users.name LIKE :name_1 AND users.id = addresses.user_id AND (addresses.email_address = :email_address_1 OR addresses.email_address = :email_address_2) AND users.id <= :id_1
+2021-08-07 14:47:53,541 INFO sqlalchemy.engine.base.Engine SELECT users.fullname || ? || addresses.email_address AS title 
+FROM users, addresses 
+WHERE users.id = addresses.user_id AND users.name BETWEEN ? AND ? AND (addresses.email_address LIKE ? OR addresses.email_address LIKE ?)
+2021-08-07 14:47:53,541 INFO sqlalchemy.engine.base.Engine (', ', 'm', 'z', '%aol.com', '%msn.com')
+[('Wendy Williams, wendy@aol.com',)]
+2021-08-07 14:47:53,542 INFO sqlalchemy.engine.base.Engine SELECT users.fullname || ? || addresses.email_address AS title 
+FROM users, addresses 
+WHERE users.id = addresses.user_id AND users.name BETWEEN ? AND ? AND (addresses.email_address LIKE ? OR addresses.email_address LIKE ?)
+2021-08-07 14:47:53,542 INFO sqlalchemy.engine.base.Engine (', ', 'm', 'z', '%@aol.com', '%@msn.com')
+[('Wendy Williams, wendy@aol.com',)]
+
+ -- Using Textual SQL -- 
+
+
+ - Specifying Bound Parameter Behaviors - 
+
+2021-08-07 14:47:53,543 INFO sqlalchemy.engine.base.Engine SELECT users.fullname || ', ' || addresses.email_address AS title FROM users, addresses WHERE users.id = addresses.user_id AND users.name BETWEEN ? AND ? AND (addresses.email_address LIKE ? OR addresses.email_address LIKE ?)
+2021-08-07 14:47:53,543 INFO sqlalchemy.engine.base.Engine ('m', 'z', '%@aol.com', '%@msn.com')
+[('Wendy Williams, wendy@aol.com',)]
+2021-08-07 14:47:53,543 INFO sqlalchemy.engine.base.Engine SELECT * FROM users WHERE users.name BETWEEN ? AND ?
+2021-08-07 14:47:53,544 INFO sqlalchemy.engine.base.Engine ('m', 'z')
+
+ - Specifying Result-Column Behaviors - 
+
+2021-08-07 14:47:53,544 INFO sqlalchemy.engine.base.Engine SELECT users.id, addresses.id, users.id, users.name, addresses.email_address AS email FROM users JOIN addresses ON users.id=addresses.user_id WHERE users.id = 1
+2021-08-07 14:47:53,544 INFO sqlalchemy.engine.base.Engine ()
+jack@yahoo.com
+
+ - Using text() fragments inside bigger statements - 
+
+2021-08-07 14:47:53,545 INFO sqlalchemy.engine.base.Engine SELECT users.fullname || ', ' || addresses.email_address AS title 
+FROM users, addresses 
+WHERE users.id = addresses.user_id AND users.name BETWEEN 'm' AND 'z' AND (addresses.email_address LIKE ? OR addresses.email_address LIKE ?)
+2021-08-07 14:47:53,545 INFO sqlalchemy.engine.base.Engine ('%@aol.com', '%@msn.com')
+[('Wendy Williams, wendy@aol.com',)]
+
+ Using More Specific Text with table(), literal_column(), and column() - 
+
+2021-08-07 14:47:53,546 INFO sqlalchemy.engine.base.Engine SELECT users.fullname || ? || addresses.email_address AS anon_1 
+FROM users, addresses 
+WHERE users.id = addresses.user_id AND users.name BETWEEN 'm' AND 'z' AND (addresses.email_address LIKE ? OR addresses.email_address LIKE ?)
+2021-08-07 14:47:53,546 INFO sqlalchemy.engine.base.Engine (', ', '%@aol.com', '%@msn.com')
+[('Wendy Williams, wendy@aol.com',)]
+
+ - Ordering or Grouping by a Label - 
+
+2021-08-07 14:47:53,546 INFO sqlalchemy.engine.base.Engine SELECT addresses.user_id, count(addresses.id) AS num_addresses 
+FROM addresses GROUP BY addresses.user_id ORDER BY addresses.user_id, num_addresses
+2021-08-07 14:47:53,547 INFO sqlalchemy.engine.base.Engine ()
+[(1, 2), (2, 2)]
+2021-08-07 14:47:53,547 INFO sqlalchemy.engine.base.Engine SELECT addresses.user_id, count(addresses.id) AS num_addresses 
+FROM addresses GROUP BY addresses.user_id ORDER BY addresses.user_id, num_addresses DESC
+2021-08-07 14:47:53,547 INFO sqlalchemy.engine.base.Engine ()
+[(1, 2), (2, 2)]
+2021-08-07 14:47:53,548 INFO sqlalchemy.engine.base.Engine SELECT users_1.id, users_1.name, users_1.fullname, users_2.id, users_2.name, users_2.fullname 
+FROM users AS users_1, users AS users_2 
+WHERE users_1.name > users_2.name ORDER BY users_1.name
+2021-08-07 14:47:53,548 INFO sqlalchemy.engine.base.Engine ()
+[(2, 'wendy', 'Wendy Williams', 1, 'jack', 'Jack Jones')]
+
+ -- Using Aliases and Subqueries -- 
+
+2021-08-07 14:47:53,549 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname 
+FROM users, addresses AS addresses_1, addresses AS addresses_2 
+WHERE users.id = addresses_1.user_id AND users.id = addresses_2.user_id AND addresses_1.email_address = ? AND addresses_2.email_address = ?
+2021-08-07 14:47:53,549 INFO sqlalchemy.engine.base.Engine ('jack@msn.com', 'jack@yahoo.com')
+[(1, 'jack', 'Jack Jones')]
+2021-08-07 14:47:53,551 INFO sqlalchemy.engine.base.Engine SELECT users.name 
+FROM users, (SELECT users.id AS id, users.name AS name, users.fullname AS fullname 
+FROM users, addresses AS addresses_1, addresses AS addresses_2 
+WHERE users.id = addresses_1.user_id AND users.id = addresses_2.user_id AND addresses_1.email_address = ? AND addresses_2.email_address = ?) AS anon_1 
+WHERE users.id = anon_1.id
+2021-08-07 14:47:53,551 INFO sqlalchemy.engine.base.Engine ('jack@msn.com', 'jack@yahoo.com')
+[('jack',)]
+
+ -- Using Joins -- 
+
+users JOIN addresses ON users.id = addresses.user_id
+users JOIN addresses ON addresses.email_address LIKE users.name || :name_1
+2021-08-07 14:47:53,552 INFO sqlalchemy.engine.base.Engine SELECT users.fullname 
+FROM users JOIN addresses ON addresses.email_address LIKE users.name || ?
+2021-08-07 14:47:53,552 INFO sqlalchemy.engine.base.Engine ('%',)
+[('Jack Jones',), ('Jack Jones',), ('Wendy Williams',)]
+SELECT users.fullname 
+FROM users LEFT OUTER JOIN addresses ON users.id = addresses.user_id
+
+ -- Common Table Expressions (CTE) -- 
+
+2021-08-07 14:47:53,553 INFO sqlalchemy.engine.base.Engine WITH anon_1 AS 
+(SELECT users.id AS id, users.name AS name 
+FROM users 
+WHERE users.name = ?)
+ SELECT addresses.id, addresses.user_id, addresses.email_address 
+FROM addresses, anon_1 
+WHERE addresses.user_id = anon_1.id ORDER BY addresses.id
+2021-08-07 14:47:53,553 INFO sqlalchemy.engine.base.Engine ('wendy',)
+[(3, 2, 'www@www.com'), (4, 2, 'wendy@aol.com')]
+2021-08-07 14:47:53,555 INFO sqlalchemy.engine.base.Engine WITH RECURSIVE anon_1(id, name) AS 
+(SELECT users.id AS id, users.name AS name 
+FROM users UNION SELECT users.id AS id, users.name AS name 
+FROM users, anon_1 AS anon_2 
+WHERE users.id > anon_2.id)
+ SELECT addresses.id, addresses.user_id, addresses.email_address 
+FROM addresses, anon_1 
+WHERE addresses.user_id = anon_1.id ORDER BY addresses.id
+2021-08-07 14:47:53,556 INFO sqlalchemy.engine.base.Engine ()
+[(1, 1, 'jack@yahoo.com'), (2, 1, 'jack@msn.com'), (3, 2, 'www@www.com'), (4, 2, 'wendy@aol.com')]
+
+ -- Everything Else -- 
+
+
+ - Bind Parameter Objects - 
+
+2021-08-07 14:47:53,556 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname 
+FROM users 
+WHERE users.name = ?
+2021-08-07 14:47:53,556 INFO sqlalchemy.engine.base.Engine ('wendy',)
+[(2, 'wendy', 'Wendy Williams')]
+2021-08-07 14:47:53,557 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname 
+FROM users 
+WHERE users.name LIKE ? || '%'
+2021-08-07 14:47:53,557 INFO sqlalchemy.engine.base.Engine ('wendy',)
+[(2, 'wendy', 'Wendy Williams')]
+2021-08-07 14:47:53,558 INFO sqlalchemy.engine.base.Engine SELECT users.id, users.name, users.fullname, addresses.id, addresses.user_id, addresses.email_address 
+FROM users LEFT OUTER JOIN addresses ON users.id = addresses.user_id 
+WHERE users.name LIKE ? || '%' OR addresses.email_address LIKE ? || '@%' ORDER BY addresses.id
+2021-08-07 14:47:53,558 INFO sqlalchemy.engine.base.Engine ('jack', 'jack')
+[(1, 'jack', 'Jack Jones', 1, 1, 'jack@yahoo.com'), (1, 'jack', 'Jack Jones', 2, 1, 'jack@msn.com')]
+
+ - Functions - 
+
+now()
+concat(:concat_1, :concat_2)
+xyz_my_goofy_function()
+CURRENT_TIMESTAMP
+2021-08-07 14:47:53,560 INFO sqlalchemy.engine.base.Engine SELECT max(addresses.email_address) AS maxemail 
+FROM addresses
+2021-08-07 14:47:53,560 INFO sqlalchemy.engine.base.Engine ()
+www@www.com
+SELECT users.id, users.name, users.fullname 
+FROM users, (SELECT q, z, r 
+FROM calculate(:x, :y)) AS anon_1 
+WHERE users.id > anon_1.z
+SELECT users.id, users.name, users.fullname 
+FROM users, (SELECT q, z, r 
+FROM calculate(:x_1, :y_1)) AS c1, (SELECT q, z, r 
+FROM calculate(:x_2, :y_2)) AS c2 
+WHERE users.id BETWEEN c1.z AND c2.z
+{'x_1': 17, 'y_1': 45, 'x_2': 5, 'y_2': 12}
+
+ - Window Functions - 
+
+SELECT users.id, row_number() OVER (ORDER BY users.name) AS anon_1 
+FROM users
+SELECT users.id, row_number() OVER (ORDER BY users.name ROWS BETWEEN :param_1 PRECEDING AND UNBOUNDED FOLLOWING) AS anon_1 
+FROM users
+
+ - Data Casts and Type Coercion - 
+
+2021-08-07 14:47:53,562 INFO sqlalchemy.engine.base.Engine SELECT CAST(users.id AS VARCHAR) AS anon_1 
+FROM users
+2021-08-07 14:47:53,563 INFO sqlalchemy.engine.base.Engine ()
+[('1',), ('2',)]
+SELECT JSON_EXTRACT(%s, %s) AS anon_1
+
+ - Unions and Other Set Operations - 
+
+2021-08-07 14:47:53,580 INFO sqlalchemy.engine.base.Engine SELECT addresses.id, addresses.user_id, addresses.email_address 
+FROM addresses 
+WHERE addresses.email_address = ? UNION SELECT addresses.id, addresses.user_id, addresses.email_address 
+FROM addresses 
+WHERE addresses.email_address LIKE ? ORDER BY addresses.email_address
+2021-08-07 14:47:53,580 INFO sqlalchemy.engine.base.Engine ('foo@bar.com', '%@yahoo.com')
+[(1, 1, 'jack@yahoo.com')]
+2021-08-07 14:47:53,581 INFO sqlalchemy.engine.base.Engine SELECT addresses.id, addresses.user_id, addresses.email_address 
+FROM addresses 
+WHERE addresses.email_address LIKE ? EXCEPT SELECT addresses.id, addresses.user_id, addresses.email_address 
+FROM addresses 
+WHERE addresses.email_address LIKE ?
+2021-08-07 14:47:53,581 INFO sqlalchemy.engine.base.Engine ('%@%.com', '%@msn.com')
+[(1, 1, 'jack@yahoo.com'), (3, 2, 'www@www.com'), (4, 2, 'wendy@aol.com')]
+2021-08-07 14:47:53,583 INFO sqlalchemy.engine.base.Engine SELECT anon_1.id, anon_1.user_id, anon_1.email_address 
+FROM (SELECT addresses.id AS id, addresses.user_id AS user_id, addresses.email_address AS email_address 
+FROM addresses 
+WHERE addresses.email_address LIKE ? UNION SELECT addresses.id AS id, addresses.user_id AS user_id, addresses.email_address AS email_address 
+FROM addresses 
+WHERE addresses.email_address LIKE ?) AS anon_1 EXCEPT SELECT addresses.id, addresses.user_id, addresses.email_address 
+FROM addresses 
+WHERE addresses.email_address LIKE ?
+2021-08-07 14:47:53,583 INFO sqlalchemy.engine.base.Engine ('%@yahoo.com', '%@msn.com', '%@msn.com')
+[(1, 1, 'jack@yahoo.com')]
+
+ - Scalar Selects - 
+
+2021-08-07 14:47:53,584 INFO sqlalchemy.engine.base.Engine SELECT users.name, (SELECT count(addresses.id) AS count_1 
+FROM addresses 
+WHERE users.id = addresses.user_id) AS anon_1 
+FROM users
+2021-08-07 14:47:53,584 INFO sqlalchemy.engine.base.Engine ()
+[('jack', 2), ('wendy', 2)]
+2021-08-07 14:47:53,585 INFO sqlalchemy.engine.base.Engine SELECT users.name, (SELECT count(addresses.id) AS count_1 
+FROM addresses 
+WHERE users.id = addresses.user_id) AS address_count 
+FROM users
+2021-08-07 14:47:53,585 INFO sqlalchemy.engine.base.Engine ()
+[('jack', 2), ('wendy', 2)]
+
+ - Correlated Subqueries - 
+
+2021-08-07 14:47:53,585 INFO sqlalchemy.engine.base.Engine SELECT users.name 
+FROM users 
+WHERE users.id = (SELECT addresses.user_id 
+FROM addresses 
+WHERE addresses.user_id = users.id AND addresses.email_address = ?)
+2021-08-07 14:47:53,585 INFO sqlalchemy.engine.base.Engine ('jack@yahoo.com',)
+[('jack',)]
+2021-08-07 14:47:53,586 INFO sqlalchemy.engine.base.Engine SELECT users.name, addresses.email_address 
+FROM users JOIN addresses ON users.id = addresses.user_id 
+WHERE users.id = (SELECT users.id 
+FROM users 
+WHERE users.id = addresses.user_id AND users.name = ?)
+2021-08-07 14:47:53,586 INFO sqlalchemy.engine.base.Engine ('jack',)
+[('jack', 'jack@yahoo.com'), ('jack', 'jack@msn.com')]
+2021-08-07 14:47:53,587 INFO sqlalchemy.engine.base.Engine SELECT users.name 
+FROM users 
+WHERE users.id = (SELECT users.id 
+FROM users 
+WHERE users.name = ?)
+2021-08-07 14:47:53,587 INFO sqlalchemy.engine.base.Engine ('wendy',)
+[('wendy',)]
+2021-08-07 14:47:53,588 INFO sqlalchemy.engine.base.Engine SELECT users.name, addresses.email_address 
+FROM users JOIN addresses ON users.id = addresses.user_id 
+WHERE users.id = (SELECT users.id 
+FROM users 
+WHERE users.id = addresses.user_id AND users.name = ?)
+2021-08-07 14:47:53,588 INFO sqlalchemy.engine.base.Engine ('jack',)
+[('jack', 'jack@yahoo.com'), ('jack', 'jack@msn.com')]
+
+ - LATERAL correlation - 
+
+SELECT people.people_id, people.age, people.name 
+FROM people JOIN LATERAL (SELECT books.book_id AS book_id 
+FROM books 
+WHERE books.owner_id = people.people_id) AS book_subq ON true
+
+ - Ordering, Grouping, Limiting, Offset...ing... - 
+
+2021-08-07 14:47:53,589 INFO sqlalchemy.engine.base.Engine SELECT users.name 
+FROM users ORDER BY users.name
+2021-08-07 14:47:53,589 INFO sqlalchemy.engine.base.Engine ()
+[('jack',), ('wendy',)]
+2021-08-07 14:47:53,590 INFO sqlalchemy.engine.base.Engine SELECT users.name 
+FROM users ORDER BY users.name DESC
+2021-08-07 14:47:53,590 INFO sqlalchemy.engine.base.Engine ()
+[('wendy',), ('jack',)]
+2021-08-07 14:47:53,590 INFO sqlalchemy.engine.base.Engine SELECT users.name, count(addresses.id) AS count_1 
+FROM users JOIN addresses ON users.id = addresses.user_id GROUP BY users.name
+2021-08-07 14:47:53,590 INFO sqlalchemy.engine.base.Engine ()
+[('jack', 2), ('wendy', 2)]
+2021-08-07 14:47:53,591 INFO sqlalchemy.engine.base.Engine SELECT users.name, count(addresses.id) AS count_1 
+FROM users JOIN addresses ON users.id = addresses.user_id GROUP BY users.name 
+HAVING length(users.name) > ?
+2021-08-07 14:47:53,591 INFO sqlalchemy.engine.base.Engine (4,)
+[('wendy', 2)]
+2021-08-07 14:47:53,592 INFO sqlalchemy.engine.base.Engine SELECT DISTINCT users.name 
+FROM users, addresses 
+WHERE (addresses.email_address LIKE '%' || users.name || '%')
+2021-08-07 14:47:53,592 INFO sqlalchemy.engine.base.Engine ()
+[('jack',), ('wendy',)]
+2021-08-07 14:47:53,593 INFO sqlalchemy.engine.base.Engine SELECT users.name, addresses.email_address 
+FROM users JOIN addresses ON users.id = addresses.user_id
+ LIMIT ? OFFSET ?
+2021-08-07 14:47:53,593 INFO sqlalchemy.engine.base.Engine (1, 1)
+[('jack', 'jack@msn.com')]
+
+ -- Inserts, Updates, and Deletes -- 
+
+2021-08-07 14:47:53,593 INFO sqlalchemy.engine.base.Engine UPDATE users SET fullname=(? || users.name)
+2021-08-07 14:47:53,593 INFO sqlalchemy.engine.base.Engine ('Fullname: ',)
+2021-08-07 14:47:53,593 INFO sqlalchemy.engine.base.Engine COMMIT
+2021-08-07 14:47:53,594 INFO sqlalchemy.engine.base.Engine INSERT INTO users (id, name) VALUES (?, (? || ?))
+2021-08-07 14:47:53,594 INFO sqlalchemy.engine.base.Engine ((4, 'name1', ' .. name'), (5, 'name2', ' .. name'), (6, 'name3', ' .. name'))
+2021-08-07 14:47:53,594 INFO sqlalchemy.engine.base.Engine COMMIT
+2021-08-07 14:47:53,595 INFO sqlalchemy.engine.base.Engine UPDATE users SET name=? WHERE users.name = ?
+2021-08-07 14:47:53,595 INFO sqlalchemy.engine.base.Engine ('ed', 'jack')
+2021-08-07 14:47:53,595 INFO sqlalchemy.engine.base.Engine COMMIT
+2021-08-07 14:47:53,595 INFO sqlalchemy.engine.base.Engine UPDATE users SET name=? WHERE users.name = ?
+2021-08-07 14:47:53,595 INFO sqlalchemy.engine.base.Engine (('ed', 'jack'), ('mary', 'wendy'), ('jake', 'jim'))
+2021-08-07 14:47:53,596 INFO sqlalchemy.engine.base.Engine COMMIT
+
+ - Correlated Updates - 
+
+2021-08-07 14:47:53,596 INFO sqlalchemy.engine.base.Engine UPDATE users SET fullname=(SELECT addresses.email_address 
+FROM addresses 
+WHERE addresses.user_id = users.id
+ LIMIT ? OFFSET ?)
+2021-08-07 14:47:53,596 INFO sqlalchemy.engine.base.Engine (1, 0)
+2021-08-07 14:47:53,596 INFO sqlalchemy.engine.base.Engine COMMIT
+
+ - Multiple Table Updates - 
+
+
+ - Parameter-Ordered Updates - 
+
+
+ - Deletes - 
+
+2021-08-07 14:47:53,597 INFO sqlalchemy.engine.base.Engine DELETE FROM addresses
+2021-08-07 14:47:53,597 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,597 INFO sqlalchemy.engine.base.Engine COMMIT
+2021-08-07 14:47:53,597 INFO sqlalchemy.engine.base.Engine DELETE FROM users WHERE users.name > ?
+2021-08-07 14:47:53,597 INFO sqlalchemy.engine.base.Engine ('m',)
+2021-08-07 14:47:53,597 INFO sqlalchemy.engine.base.Engine COMMIT
+
+ - Multiple Table Deletes - 
+
+
+ - Matched Row Counts - 
+
+2021-08-07 14:47:53,598 INFO sqlalchemy.engine.base.Engine DELETE FROM users
+2021-08-07 14:47:53,598 INFO sqlalchemy.engine.base.Engine ()
+2021-08-07 14:47:53,598 INFO sqlalchemy.engine.base.Engine COMMIT
+1
